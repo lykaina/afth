@@ -350,6 +350,9 @@ class AFTH:
         if line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 70) and ord(line[2]) < 128:
             wnum=(ord(line[1])-65)*128+ord(line[2])%128
             wordlist[wnum]=line[4:]
+        elif line[0]='"' and len(line) > 1:
+            for i in range(len(line)-1):
+                self.stack.append(ord(line[len(line)-i-1]))
         elif ord(line[0]) >= 65 and ord(line[0]) <= 70:
             wnum=(ord(line[0])-65)*128+ord(line[1])%128
             for lc in range(len(wordlist[wnum])):
