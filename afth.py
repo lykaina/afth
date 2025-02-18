@@ -34,6 +34,7 @@ class AFTH:
         self.stdin=stdin
         self.stdout=stdout
         self.flst=[]
+        self.j=False
         self.t=0
         self.tg=0
         self.th=0
@@ -75,14 +76,14 @@ class AFTH:
         else:
             self.obuf=self.obuf+chin.encode()
     def open_file(self):
-        befile = open(self.fname,'rb')
+        befile = open(self.fname,'rt')
         befile_lst = befile.readlines()
         befile.close()
         del befile
         flst = []
         i=0
         for i in range(len(befile_lst)):
-            flst.append(befile_lst[i].strip(b'\n').strip(b'\r'))
+            flst.append(befile_lst[i].strip('\n').strip('\r'))
         del befile_lst
         self.flst=flst
         del flst
@@ -127,28 +128,30 @@ class AFTH:
     def rcore_or(self):
         if self.ti == 0 and self.tk == 0:
             self.tk=0
-        else
+        else:
             self.tk=1
     def rcore_and(self):
         if self.ti != 0 and self.tk != 0:
             self.tk=1
-        else
+        else:
             self.tk=0
     def rcore_xor(self):
         if self.ti == 0 and self.tk == 0:
             self.tk=0
         elif self.ti != 0 and self.tk != 0:
             self.tk=0
-        else
+        else:
             self.tk=1
     def rcore_jnz_r(self):
         if self.tk != 0:
             self.lnum=self.lnum+self.t
+            self.j=True
         else:
             pass
     def rcore_jnz_a(self):
         if self.tk != 0:
             self.lnum=self.t
+            self.j=True
         else:
             pass
     def rcore_t_zero(self):
@@ -254,85 +257,85 @@ class AFTH:
             self.numin=0
         else:
             pass
-        if nmode == True:
+        if self.nmode == True:
             pass
-        elif gch=b'g':
+        elif gch==b'g':
             self.rcore_t_g()
-        elif gch=b'G':
+        elif gch==b'G':
             self.rcore_g_t()
-        elif gch=b'h':
+        elif gch==b'h':
             self.rcore_t_h()
-        elif gch=b'H':
+        elif gch==b'H':
             self.rcore_h_t()
-        elif gch=b'i':
+        elif gch==b'i':
             self.rcore_t_i()
-        elif gch=b'I':
+        elif gch==b'I':
             self.rcore_i_t()
-        elif gch=b'j':
+        elif gch==b'j':
             self.rcore_jnz_r()
-        elif gch=b'J':
+        elif gch==b'J':
             self.rcore_jnz_a()
-        elif gch=b'k':
+        elif gch==b'k':
             self.rcore_t_k()
-        elif gch=b'K':
+        elif gch==b'K':
             self.rcore_k_t()
-        elif gch=b'n':
+        elif gch==b'n':
             self.rcore_not()
-        elif gch=b'N':
+        elif gch==b'N':
             self.rcore_and()
-        elif gch=b'o':
+        elif gch==b'o':
             self.rcore_or()
-        elif gch=b'O':
+        elif gch==b'O':
             self.rcore_xor()
-        elif gch=b's':
+        elif gch==b's':
             self.rcore_t_s()
-        elif gch=b'S':
+        elif gch==b'S':
             self.rcore_s_t()
-        elif gch=b'z':
+        elif gch==b'z':
             self.rcore_zte()
-        elif gch=b'Z':
+        elif gch==b'Z':
             self.rcore_ztg()
-        elif gch=b'_':
+        elif gch==b'_':
             self.rcore_t_zero()
-        elif gch=b'^':
+        elif gch==b'^':
             self.rcore_t_inc()
-        elif gch=b'v':
+        elif gch==b'v':
             self.rcore_t_dec()
-        elif gch=b'<':
+        elif gch==b'<':
             self.rcore_t_shl()
-        elif gch=b'>':
+        elif gch==b'>':
             self.rcore_t_shr()
-        elif gch=b'|':
+        elif gch==b'|':
             self.rcore_t_abs()
-        elif gch=b'-':
+        elif gch==b'-':
             self.rcore_t_flipsign()
-        elif gch=b'+':
+        elif gch==b'+':
             self.rmath_t_ti_add()
-        elif gch=b'*':
+        elif gch==b'*':
             self.rmath_t_ti_mul()
-        elif gch=b'/':
+        elif gch==b'/':
             self.rmath_t_ti_idiv()
-        elif gch=b'%':
+        elif gch==b'%':
             self.rmath_t_ti_mod()
-        elif gch=b'p':
+        elif gch==b'p':
             self.rmath_t_ti_pow()
-        elif gch=b'l':
+        elif gch==b'l':
             self.rmath_t_ti_log()
-        elif gch=b'u':
+        elif gch==b'u':
             self.rxtra_t_uptime_s()
-        elif gch=b'U':
+        elif gch==b'U':
             self.rxtra_t_uptime_ns()
-        elif gch=b'r':
+        elif gch==b'r':
             self.rxtra_t_randint()
-        elif gch=b'R':
+        elif gch==b'R':
             self.rxtra_t_randseed()
-        elif gch=b'x':
+        elif gch==b'x':
             self.rxtio_t_in_char()
-        elif gch=b'X':
+        elif gch==b'X':
             self.rxtio_t_in_int()
-        elif gch=b'y':
+        elif gch==b'y':
             self.rxtio_t_out_char()
-        elif gch=b'Y':
+        elif gch==b'Y':
             self.rxtio_t_out_int()
         else:
             pass
@@ -353,12 +356,12 @@ class AFTH:
                 self.stack.append((ord(cmp[0])-87)*16+(ord(cmp[1])-87))
             else:
                 pass
-        elif cmp[0]='"':
+        elif cmp[0]=='"':
             self.stack.append(ord(cmp[1])%128)
         elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 70:
             wnum=(ord(cmp[0])-65)*128+ord(cmp[1])%128
-            for lc in range(len(wordlist[wnum])):
-                cmdch = wordlist[wnum][lc]
+            for lc in range(len(self.wordlist[wnum])):
+                cmdch = self.wordlist[wnum][lc]
                 runw=runw+self.run_char(cmdch.encode())
                 self.buf_out()
         else:
@@ -366,7 +369,8 @@ class AFTH:
         return runw%256
     def run_line(self,line):
         runl=0
-        ln=self.lnum
+        #ln=self.lnum
+        self.j=False
         self.t=0
         self.tg=0
         self.th=0
@@ -378,13 +382,13 @@ class AFTH:
             pass
         elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 70) and ord(line[2]) < 128:
             wnum=(ord(line[1])-65)*128+ord(line[2])%128
-            wordlist[wnum]=line[4:]
-        elif line[0]='"' and len(line) > 1:
+            self.wordlist[wnum]=line[4:]
+        elif line[0]=='"' and len(line) > 1:
             for i in range(len(line)-1):
                 self.stack.append(ord(line[len(line)-i-1]))
-        elif line[0]='#':
+        elif line[0]=='#':
             pass
-        elif line[0]=';' and len(line) > 2:
+        elif line[0]==';' and len(line) > 2:
             runp=0
             for i in range((len(line)-1)//2):
                 cmdpair=line[1+(i*2):3+(i*2)]
@@ -401,7 +405,7 @@ class AFTH:
                 cmdch = line[lc]
                 runl=self.run_char(cmdch.encode())
                 self.buf_out()
-        if ln==self.lnum:
+        if self.j==False:
             self.lnum=self.lnum+1
         return runl
     def run_file(self):
@@ -411,7 +415,6 @@ class AFTH:
         while l < len(self.flst) and l > -1:
             line = self.flst[l]
             runf=self.run_line(line)
-            self.buf_out()
             l=self.lnum
         return runf
 
