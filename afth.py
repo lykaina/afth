@@ -92,8 +92,9 @@ class AFTH:
         self.flst=flst
         del flst
     def make_wordlist(self):
-        for i in range(3328):
-            self.wordlist.append(' ')
+        self.wordlist.append(['00',' '])
+        self.wordlist.append(['A+','sFsLf+S'])
+        self.wordlist.append(['A-','sFs-Lf+S'])
     def make_varlist(self):
         for i in range(128):
             self.varlist.append(0)
@@ -283,7 +284,9 @@ class AFTH:
             self.stack=[0,self.stack[0],self.stack[1]]
         else:
             pass
-        if gch==b's':
+        if gch==b' ':
+            pass
+        elif gch==b's':
             self.rcore_t_s()
         elif gch==b'S':
             self.rcore_s_t()
@@ -401,9 +404,12 @@ class AFTH:
             else:
                 pass
         elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90:
-            wnum=(ord(cmp[0])-65)*128+ord(cmp[1])%128
-            for lc in range(len(self.wordlist[wnum])):
-                cmdch = self.wordlist[wnum][lc]
+            wnum=0
+            for i in range(len(self.wordlist)):
+                if self.wordlist[i][0]==cmp:
+                    wnum=i
+            for lc in range(len(self.wordlist[wnum][1])):
+                cmdch = self.wordlist[wnum][1][lc]
                 runw=runw+self.run_char(cmdch.encode())
                 self.buf_out()
         else:
@@ -423,8 +429,8 @@ class AFTH:
         if len(line) == 0:
             pass
         elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 90) and ord(line[2]) < 128 and len(line) >= 5:
-            wnum=(ord(line[1])-65)*128+ord(line[2])%128
-            self.wordlist[wnum]=line[4:]
+            wname=line[1]+line[2]
+            self.wordlist.append([wname,line[4:]])
         elif line[0]=='$' and ord(line[1]) < 128 and len(line) >= 4:
             vnum=ord(line[1])%128
             self.varlist[vnum]=True
