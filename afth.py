@@ -92,9 +92,16 @@ class AFTH:
         self.flst=flst
         del flst
     def make_wordlist(self):
-        self.wordlist.append(['00',' '])
-        self.wordlist.append(['A+','sFsLf+S'])
-        self.wordlist.append(['A-','sFs-Lf+S'])
+        self.wordlist.append(['  ',' '])
+        self.wordlist.append(['A+','sLs+S'])
+        self.wordlist.append(['A-','s-Ls+S'])
+        self.wordlist.append(['A*','sLs*S'])
+        self.wordlist.append(['A/','sLs/S'])
+        self.wordlist.append(['A%','sLs%S'])
+        self.wordlist.append(['Ci','wS'])
+        self.wordlist.append(['Co','sy'])
+        self.wordlist.append(['Ii','WS'])
+        self.wordlist.append(['Io','sY'])
     def make_varlist(self):
         for i in range(128):
             self.varlist.append(0)
