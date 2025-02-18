@@ -1,0 +1,143 @@
+    def rcore_t_s(self):
+        self.t=self.stack.pop()
+    def rcore_s_t(self):
+        self.stack.append(self.t)
+    def rcore_t_g(self):
+        self.t=self.tg
+    def rcore_g_t(self):
+        self.tg=self.t
+    def rcore_t_h(self):
+        self.t=self.th
+    def rcore_h_t(self):
+        self.th=self.t
+    def rcore_t_i(self):
+        self.t=self.ti
+    def rcore_i_t(self):
+        self.ti=self.t
+    def rcore_t_k(self):
+        self.t=self.tk
+    def rcore_k_t(self):
+        self.tk=self.t
+    def rcore_zte(self):
+        if self.t == 0:
+            self.tk=1
+        else:
+            self.tk=0
+    def rcore_ztg(self):
+        if self.t > 0:
+            self.tk=1
+        else:
+            self.tk=0
+    def rcore_jnz_r(self):
+        if self.tk != 0:
+            self.lnum=self.lnum+self.t
+        else:
+            pass
+    def rcore_jnz_a(self):
+        if self.tk != 0:
+            self.lnum=self.t
+        else:
+            pass
+    def rcore_not(self):
+        if self.tk == 0:
+            self.tk=1
+        else:
+            self.tk=0
+    def rcore_or(self):
+        if self.ti == 0 and self.tk == 0:
+            self.tk=0
+        else
+            self.tk=1
+    def rcore_and(self):
+        if self.ti != 0 and self.tk != 0:
+            self.tk=1
+        else
+            self.tk=0
+    def rcore_xor(self):
+        if self.ti == 0 and self.tk == 0:
+            self.tk=0
+        elif self.ti != 0 and self.tk != 0:
+            self.tk=0
+        else
+            self.tk=1
+    def rcore_t_zero(self):
+        self.t=0
+    def rcore_t_inc(self):
+        self.t=self.t+1
+    def rcore_t_dec(self):
+        self.t=self.t-1
+    def rcore_t_shl(self):
+        self.t=self.t*2
+    def rcore_t_shr(self):
+        self.t=self.t//2
+    def rcore_t_abs(self):
+        self.t=abs(self.t)
+    def rcore_t_flipsign(self):
+        self.t=self.t*-1
+    def rmath_t_ti_add(self):
+        self.t=self.t+self.ti
+    def rmath_t_ti_mul(self):
+        self.t=self.t*self.ti
+    def rmath_t_ti_idiv(self,t):
+        self.t=self.t//self.ti
+    def rmath_t_ti_mod(self):
+        self.t=self.t%self.ti
+    def rmath_t_ti_pow(self):
+        from math import floor
+        self.t=floor(pow(self.t,self.ti))
+    def rmath_t_ti_log(self):
+        from math import floor,log
+        self.t=floor(log(self.t,self.ti))
+    def rxtra_t_uptime_s(self):
+        from time import monotonic
+        self.t=monotonic()
+    def rxtra_t_uptime_ns(self):
+        from time import monotonic_ns
+        self.t=monotonic_ns()%1000000000
+    def rxtra_t_randseed(self):
+        from random import seed
+        seed(self.t)
+    def rxtra_t_randint(self):
+        from random import randint
+        self.t=randint(0,self.t-1)
+    def rxtio_t_in_char(self):
+        self.buf_in_get()
+        self.t=self.buf_in_pop()
+    def rxtio_t_in_int(self):
+        a=0
+        b=0
+        d=[]
+        self.buf_in_get()
+        a=self.buf_in_pop()
+        while a < 48 or a > 57:
+            d.append(a)
+            self.buf_in_get()
+            a=self.buf_in_pop()
+        while a >= 48 and a <= 57:
+            b=b*10+(a-48)
+            self.buf_in_get()
+            a=self.buf_in_pop()
+        self.t=a
+    def rxtio_t_out_char(self):
+        self.buf_out_put(chr(abs(self.t)%128))
+    def rxtio_t_out_int(self):
+        from math import floor,log
+        a=self.t
+        j=0
+        l=0
+        s=0
+        o=''
+        if a != 0:
+            l=floor(log(abs(a),10))
+            s=a//abs(a)
+        else:
+            l=0
+            s=1
+        if s == -1:
+            o=o+'-'
+        else:
+            pass
+        for j in range(l+1):
+            o=o+chr(48+(abs(a)//pow(10,l-j))%10)
+        o=o+' '
+        self.buf_out_put(o)
