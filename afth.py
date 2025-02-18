@@ -169,7 +169,7 @@ class AFTH:
         self.t=self.t+self.ti
     def rmath_t_ti_mul(self):
         self.t=self.t*self.ti
-    def rmath_t_ti_idiv(self,t):
+    def rmath_t_ti_idiv(self):
         self.t=self.t//self.ti
     def rmath_t_ti_mod(self):
         self.t=self.t%self.ti
