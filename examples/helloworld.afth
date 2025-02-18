@@ -1,6 +1,6 @@
-:DO svFsyfSK_j
-=0a
+:RUN svFsyfSK_j
+#0a
 "Hello, World!
-=0e
-!DO
-;end
+#0e
+RUN
+END
