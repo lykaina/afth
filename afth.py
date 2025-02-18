@@ -100,8 +100,10 @@ class AFTH:
         self.wordlist.append(['A%','sLs%S'])
         self.wordlist.append(['Ci','wS'])
         self.wordlist.append(['Co','sy'])
-        self.wordlist.append(['Ii','WS'])
-        self.wordlist.append(['Io','sY'])
+        self.wordlist.append(['Id','WS'])
+        self.wordlist.append(['Od','sY'])
+        self.wordlist.append(['Ih','eS'])
+        self.wordlist.append(['Oh','sE'])
     def make_varlist(self):
         for i in range(128):
             self.varis.append(False)
