@@ -282,6 +282,54 @@ class AFTH:
             o=o+chr(48+(abs(a)//pow(10,l-j))%10)
         o=o+' '
         self.buf_out_put(o)
+    def rxtio_t_in_hex(self):
+        a=0
+        b=0
+        d=[]
+        self.buf_in_get()
+        a=self.buf_in_pop()
+        while not ((a >= 48 and a <= 57) or (a >= 65 and a <= 70) or (a >= 97 and a <= 102)):
+            self.buf_in_get()
+            a=self.buf_in_pop()
+        while (a >= 48 and a <= 57) or (a >= 65 and a <= 70) or (a >= 97 and a <= 102):
+            d.append(a)
+            self.buf_in_get()
+            a=self.buf_in_pop()
+        for i in range(len(d)):
+            if d[i] >= 48 and d[i] <= 57:
+                b=b*16+(d[i]-48)
+            elif d[i] >= 65 and d[i] <= 70:
+                b=b*16+(d[i]-55)
+            elif d[i] >= 97 and d[i] <= 102:
+                b=b*16+(d[i]-87)
+            else:
+                pass
+        self.t=b
+    def rxtio_t_out_hex(self):
+        from math import floor,log
+        a=self.t
+        j=0
+        l=0
+        s=0
+        o=''
+        if a != 0:
+            l=floor(log(abs(a),16))
+            s=a//abs(a)
+        else:
+            l=0
+            s=1
+        if s == -1:
+            o=o+'-'
+        else:
+            pass
+        for j in range(l+1):
+            n=(abs(a)//pow(16,l-j))%16
+            if n >= 10:
+                o=o+chr(97+n)
+            else:
+                o=o+chr(48+n)
+        o=o+' '
+        self.buf_out_put(o)
     def run_char(self,gch=b' '):
         ret=0
         if len(self.stack) == 0:
@@ -388,6 +436,10 @@ class AFTH:
             self.rxtio_t_out_char()
         elif gch==b'Y':
             self.rxtio_t_out_int()
+        elif gch==b'e':
+            self.rxtio_t_in_hex()
+        elif gch==b'E':
+            self.rxtio_t_out_hex()
         else:
             pass
         return ret
