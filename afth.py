@@ -36,10 +36,12 @@ class AFTH:
         self.flst=[]
         self.j=False
         self.t=0
+        self.tf=0
         self.tg=0
         self.th=0
         self.ti=0
         self.tk=0
+        self.tl=0
         self.numin=0
         self.nmode=False
         self.wordlist=[]
@@ -90,16 +92,20 @@ class AFTH:
         self.flst=flst
         del flst
     def make_wordlist(self):
-        for i in range(640):
+        for i in range(3328):
             self.wordlist.append(' ')
     def make_varlist(self):
-        for i in range(640):
+        for i in range(128):
             self.varlist.append(0)
             self.var.append(False)
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
         self.stack.append(self.t)
+    def rcore_t_f(self):
+        self.t=self.tf
+    def rcore_f_t(self):
+        self.tf=self.t
     def rcore_t_g(self):
         self.t=self.tg
     def rcore_g_t(self):
@@ -116,6 +122,10 @@ class AFTH:
         self.t=self.tk
     def rcore_k_t(self):
         self.tk=self.t
+    def rcore_t_l(self):
+        self.t=self.tl
+    def rcore_l_t(self):
+        self.tl=self.t
     def rcore_zte(self):
         if self.t == 0:
             self.tk=1
@@ -126,28 +136,50 @@ class AFTH:
             self.tk=1
         else:
             self.tk=0
-    def rcore_not(self):
+    def rcore_not_tk(self):
         if self.tk == 0:
             self.tk=1
         else:
             self.tk=0
-    def rcore_or(self):
-        if self.ti == 0 and self.tk == 0:
+    def rcore_or_tk(self):
+        if self.tl == 0 and self.tk == 0:
             self.tk=0
         else:
             self.tk=1
-    def rcore_and(self):
-        if self.ti != 0 and self.tk != 0:
+    def rcore_and_tk(self):
+        if self.tl != 0 and self.tk != 0:
             self.tk=1
         else:
             self.tk=0
-    def rcore_xor(self):
-        if self.ti == 0 and self.tk == 0:
+    def rcore_xor_tk(self):
+        if self.tl == 0 and self.tk == 0:
             self.tk=0
-        elif self.ti != 0 and self.tk != 0:
+        elif self.tl != 0 and self.tk != 0:
             self.tk=0
         else:
             self.tk=1
+    def rcore_not_tl(self):
+        if self.tk == 0:
+            self.tl=1
+        else:
+            self.tl=0
+    def rcore_or_tl(self):
+        if self.tl == 0 and self.tk == 0:
+            self.tl=0
+        else:
+            self.tl=1
+    def rcore_and_tl(self):
+        if self.tl != 0 and self.tk != 0:
+            self.tl=1
+        else:
+            self.tl=0
+    def rcore_xor_tl(self):
+        if self.tl == 0 and self.tk == 0:
+            self.tl=0
+        elif self.tl != 0 and self.tk != 0:
+            self.tl=0
+        else:
+            self.tl=1
     def rcore_jnz_r(self):
         if self.tk != 0:
             self.lnum=self.lnum+self.t
@@ -174,20 +206,20 @@ class AFTH:
         self.t=abs(self.t)
     def rcore_t_flipsign(self):
         self.t=self.t*-1
-    def rmath_t_ti_add(self):
+    def rmath_t_tl_add(self):
         self.t=self.t+self.ti
-    def rmath_t_ti_mul(self):
+    def rmath_t_tl_mul(self):
         self.t=self.t*self.ti
-    def rmath_t_ti_idiv(self):
+    def rmath_t_tl_idiv(self):
         self.t=self.t//self.ti
-    def rmath_t_ti_mod(self):
+    def rmath_t_tl_mod(self):
         self.t=self.t%self.ti
-    def rmath_t_ti_pow(self):
+    def rmath_t_tl_pow(self):
         from math import floor
-        self.t=floor(pow(self.t,self.ti))
-    def rmath_t_ti_log(self):
+        self.t=floor(pow(self.t,self.tl))
+    def rmath_t_tl_log(self):
         from math import floor,log
-        self.t=floor(log(self.t,self.ti))
+        self.t=floor(log(self.t,self.tl))
     def rxtra_t_uptime_s(self):
         from time import monotonic
         self.t=monotonic()
@@ -251,20 +283,14 @@ class AFTH:
             self.stack=[0,self.stack[0],self.stack[1]]
         else:
             pass
-        if gch[0] >= 48 and gch[0] <= 57:
-            self.nmode=True
-            self.numin=self.numin*16+(gch[0]-48)
-        elif gch[0] >= 97 and gch[0] <= 102:
-            self.nmode=True
-            self.numin=self.numin*16+(gch[0]-87)
-        elif self.nmode == True:
-            self.nmode=False
-            self.stack.append(self.numin)
-            self.numin=0
-        else:
-            pass
-        if self.nmode == True:
-            pass
+        if gch==b's':
+            self.rcore_t_s()
+        elif gch==b'S':
+            self.rcore_s_t()
+        elif gch==b'f':
+            self.rcore_t_f()
+        elif gch==b'F':
+            self.rcore_f_t()
         elif gch==b'g':
             self.rcore_t_g()
         elif gch==b'G':
@@ -285,18 +311,26 @@ class AFTH:
             self.rcore_t_k()
         elif gch==b'K':
             self.rcore_k_t()
+        elif gch==b'l':
+            self.rcore_t_l()
+        elif gch==b'L':
+            self.rcore_l_t()
         elif gch==b'n':
-            self.rcore_not()
-        elif gch==b'N':
-            self.rcore_and()
+            self.rcore_not_tk()
+        elif gch==b'a':
+            self.rcore_and_tk()
         elif gch==b'o':
-            self.rcore_or()
+            self.rcore_or_tk()
+        elif gch==b'x':
+            self.rcore_xor_tk()
+        elif gch==b'N':
+            self.rcore_not_tl()
+        elif gch==b'A':
+            self.rcore_and_tl()
         elif gch==b'O':
-            self.rcore_xor()
-        elif gch==b's':
-            self.rcore_t_s()
-        elif gch==b'S':
-            self.rcore_s_t()
+            self.rcore_or_tl()
+        elif gch==b'X':
+            self.rcore_xor_tl()
         elif gch==b'z':
             self.rcore_zte()
         elif gch==b'Z':
@@ -316,17 +350,17 @@ class AFTH:
         elif gch==b'-':
             self.rcore_t_flipsign()
         elif gch==b'+':
-            self.rmath_t_ti_add()
+            self.rmath_t_tl_add()
         elif gch==b'*':
-            self.rmath_t_ti_mul()
+            self.rmath_t_tl_mul()
         elif gch==b'/':
-            self.rmath_t_ti_idiv()
+            self.rmath_t_tl_idiv()
         elif gch==b'%':
-            self.rmath_t_ti_mod()
+            self.rmath_t_tl_mod()
         elif gch==b'p':
-            self.rmath_t_ti_pow()
-        elif gch==b'l':
-            self.rmath_t_ti_log()
+            self.rmath_t_tl_pow()
+        elif gch==b'P':
+            self.rmath_t_tl_log()
         elif gch==b'u':
             self.rxtra_t_uptime_s()
         elif gch==b'U':
@@ -335,9 +369,9 @@ class AFTH:
             self.rxtra_t_randint()
         elif gch==b'R':
             self.rxtra_t_randseed()
-        elif gch==b'x':
+        elif gch==b'w':
             self.rxtio_t_in_char()
-        elif gch==b'X':
+        elif gch==b'W':
             self.rxtio_t_in_int()
         elif gch==b'y':
             self.rxtio_t_out_char()
@@ -348,24 +382,8 @@ class AFTH:
         return ret
     def run_pair(self,cmp):
         runw=0
-        if ord(cmp[0]) >= 48 and ord(cmp[0]) <= 57:
-            if ord(cmp[1]) >= 48 and ord(cmp[1]) <= 57:
-                self.stack.append((ord(cmp[0])-48)*16+(ord(cmp[1])-48))
-            elif ord(cmp[1]) >= 97 and ord(cmp[1]) <= 102:
-                self.stack.append((ord(cmp[0])-48)*16+(ord(cmp[1])-87))
-            else:
-                pass
-        elif ord(cmp[0]) >= 97 and ord(cmp[0]) <= 102:
-            if ord(cmp[1]) >= 48 and ord(cmp[1]) <= 57:
-                self.stack.append((ord(cmp[0])-87)*16+(ord(cmp[1])-48))
-            elif ord(cmp[1]) >= 97 and ord(cmp[1]) <= 102:
-                self.stack.append((ord(cmp[0])-87)*16+(ord(cmp[1])-87))
-            else:
-                pass
-        elif cmp[0]=='"':
+        if cmp[0]=='"':
             self.stack.append(ord(cmp[1])%128)
-        elif cmp[0]=='F':
-            pass
         elif cmp[0]=='<':
             if var[cmp[1]%128]==True:
                 self.stack.append(varlist[cmp[1]%128])
@@ -382,7 +400,7 @@ class AFTH:
                 self.stack.append(varlist[cmp[1]%128])
             else:
                 pass
-        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 69:
+        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90:
             wnum=(ord(cmp[0])-65)*128+ord(cmp[1])%128
             for lc in range(len(self.wordlist[wnum])):
                 cmdch = self.wordlist[wnum][lc]
@@ -396,23 +414,23 @@ class AFTH:
         #ln=self.lnum
         self.j=False
         self.t=0
+        self.tf=0
         self.tg=0
         self.th=0
         self.ti=0
         self.tk=0
-        self.numin=0
-        self.nmode=False
+        self.tl=0
         if len(line) == 0:
             pass
-        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 69) and ord(line[2]) < 128:
+        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 90) and ord(line[2]) < 128 and len(line) >= 5:
             wnum=(ord(line[1])-65)*128+ord(line[2])%128
             self.wordlist[wnum]=line[4:]
-        elif line[0]==':' and ord(line[1]) == 70 and ord(line[2]) < 128:
-            vnum=ord(line[2])%128
+        elif line[0]=='$' and ord(line[1]) < 128 and len(line) >= 4:
+            vnum=ord(line[1])%128
             self.varlist[vnum]=True
             v=0
             vstop=False
-            for i in range(len(line)-4):
+            for i in range(len(line)-3):
                 if vstop==True:
                     pass
                 elif ord(line[4+i]) >= 48 and ord(line[4+i]) <= 57:
@@ -422,12 +440,27 @@ class AFTH:
                 else:
                     vstop=True
             self.var[vnum]=v
-        elif line[0]=='"' and len(line) > 1:
+        elif line[0]=='=' and len(line) >= 2:
+            v=0
+            vstop=False
+            for i in range(len(line)-1):
+                if vstop==True:
+                    pass
+                elif ord(line[4+i]) >= 48 and ord(line[4+i]) <= 57:
+                    v=v*16+(ord(line[4+i])-48)
+                elif ord(line[4+i]) >= 97 and ord(line[4+i]) <= 102:
+                    v=v*16+(ord(line[4+i])-87)
+                else:
+                    vstop=True
+            self.stack.append(v)
+        elif line[0]=='"' and len(line) >= 2:
             for i in range(len(line)-1):
                 self.stack.append(ord(line[len(line)-i-1]))
+        elif line[0]==';':
+            pass
         elif line[0]=='#':
             pass
-        elif line[0]==';' and len(line) > 2:
+        elif line[0]=='!' and len(line) > 2:
             runp=0
             for i in range((len(line)-1)//2):
                 cmdpair=line[1+(i*2):3+(i*2)]
