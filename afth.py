@@ -337,6 +337,33 @@ class AFTH:
         else:
             pass
         return ret
+    def run_pair(self,cmp):
+        runw=0
+        if ord(cmp[0]) >= 48 and ord(cmp[0]) <= 57:
+            if ord(cmp[1]) >= 48 and ord(cmp[1]) <= 57:
+                self.stack.append((ord(cmp[0])-48)*16+(ord(cmp[1])-48))
+            elif ord(cmp[1]) >= 97 and ord(cmp[1]) <= 102:
+                self.stack.append((ord(cmp[0])-48)*16+(ord(cmp[1])-87))
+            else:
+                pass
+        elif ord(cmp[0]) >= 97 and ord(cmp[0]) <= 102:
+            if ord(cmp[1]) >= 48 and ord(cmp[1]) <= 57:
+                self.stack.append((ord(cmp[0])-87)*16+(ord(cmp[1])-48))
+            elif ord(cmp[1]) >= 97 and ord(cmp[1]) <= 102:
+                self.stack.append((ord(cmp[0])-87)*16+(ord(cmp[1])-87))
+            else:
+                pass
+        elif cmp[0]='"':
+            self.stack.append(ord(cmp[1])%128)
+        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 70:
+            wnum=(ord(cmp[0])-65)*128+ord(cmp[1])%128
+            for lc in range(len(wordlist[wnum])):
+                cmdch = wordlist[wnum][lc]
+                runw=runw+self.run_char(cmdch.encode())
+                self.buf_out()
+        else:
+            pass
+        return runw%256
     def run_line(self,line):
         runl=0
         ln=self.lnum
@@ -353,6 +380,10 @@ class AFTH:
         elif line[0]='"' and len(line) > 1:
             for i in range(len(line)-1):
                 self.stack.append(ord(line[len(line)-i-1]))
+        elif line[0]=';' and len(line) > 2:
+            for i in range((len(line)-1)//2):
+                cmdpair=line[1+(i*2):3+(i*2)]
+                runl=self.run_pair(cmdpair)
         elif ord(line[0]) >= 65 and ord(line[0]) <= 70:
             wnum=(ord(line[0])-65)*128+ord(line[1])%128
             for lc in range(len(wordlist[wnum])):
