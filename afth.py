@@ -45,7 +45,7 @@ class AFTH:
         self.numin=0
         self.nmode=False
         self.wordlist=[]
-        self.varlist=[]
+        self.varis=[]
         self.var=[]
     def buf_in(self):
         _in=self.stdin.read(1)
@@ -104,8 +104,8 @@ class AFTH:
         self.wordlist.append(['Io','sY'])
     def make_varlist(self):
         for i in range(128):
-            self.varlist.append(0)
-            self.var.append(False)
+            self.varis.append(False)
+            self.var.append(0)
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
@@ -395,19 +395,19 @@ class AFTH:
         if cmp[0]=='"':
             self.stack.append(ord(cmp[1])%128)
         elif cmp[0]=='<':
-            if var[cmp[1]%128]==True:
-                self.stack.append(varlist[cmp[1]%128])
+            if varis[cmp[1]%128]==True:
+                self.stack.append(var[cmp[1]%128])
             else:
                 pass
         elif cmp[0]=='>':
-            if var[cmp[1]%128]==True:
-                varlist[cmp[1]%128]=self.stack.pop()
+            if varis[cmp[1]%128]==True:
+                var[cmp[1]%128]=self.stack.pop()
             else:
                 pass
         elif cmp[0]=='=':
-            if var[cmp[1]%128]==True:
-                varlist[cmp[1]%128]=self.stack.pop()
-                self.stack.append(varlist[cmp[1]%128])
+            if varis[cmp[1]%128]==True:
+                var[cmp[1]%128]=self.stack.pop()
+                self.stack.append(var[cmp[1]%128])
             else:
                 pass
         elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90:
@@ -440,7 +440,7 @@ class AFTH:
             self.wordlist.append([wname,line[4:]])
         elif line[0]=='$' and ord(line[1]) < 128 and len(line) >= 4:
             vnum=ord(line[1])%128
-            self.varlist[vnum]=True
+            self.varis[vnum]=True
             v=0
             vstop=False
             for i in range(len(line)-3):
