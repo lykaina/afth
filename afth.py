@@ -446,10 +446,10 @@ class AFTH:
             for i in range(len(line)-1):
                 if vstop==True:
                     pass
-                elif ord(line[4+i]) >= 48 and ord(line[4+i]) <= 57:
-                    v=v*16+(ord(line[4+i])-48)
-                elif ord(line[4+i]) >= 97 and ord(line[4+i]) <= 102:
-                    v=v*16+(ord(line[4+i])-87)
+                elif ord(line[1+i]) >= 48 and ord(line[1+i]) <= 57:
+                    v=v*16+(ord(line[1+i])-48)
+                elif ord(line[1+i]) >= 97 and ord(line[1+i]) <= 102:
+                    v=v*16+(ord(line[1+i])-87)
                 else:
                     vstop=True
             self.stack.append(v)
