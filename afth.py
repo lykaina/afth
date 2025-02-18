@@ -374,16 +374,22 @@ class AFTH:
         self.tk=0
         self.numin=0
         self.nmode=False
-        if line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 70) and ord(line[2]) < 128:
+        if len(line) == 0:
+            pass
+        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 70) and ord(line[2]) < 128:
             wnum=(ord(line[1])-65)*128+ord(line[2])%128
             wordlist[wnum]=line[4:]
         elif line[0]='"' and len(line) > 1:
             for i in range(len(line)-1):
                 self.stack.append(ord(line[len(line)-i-1]))
+        elif line[0]='#':
+            pass
         elif line[0]=';' and len(line) > 2:
+            runp=0
             for i in range((len(line)-1)//2):
                 cmdpair=line[1+(i*2):3+(i*2)]
-                runl=self.run_pair(cmdpair)
+                runp=runp+self.run_pair(cmdpair)
+            runl=runp%256
         elif ord(line[0]) >= 65 and ord(line[0]) <= 70:
             wnum=(ord(line[0])-65)*128+ord(line[1])%128
             for lc in range(len(wordlist[wnum])):
@@ -418,4 +424,4 @@ def main(file):
     r=afth.run_file()
     del afth
     gc.collect()
-    sys_exit(r)
+    sys_exit(abs(r)%256)
