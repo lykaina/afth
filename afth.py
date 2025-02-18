@@ -43,6 +43,8 @@ class AFTH:
         self.numin=0
         self.nmode=False
         self.wordlist=[]
+        self.varlist=[]
+        self.var=[]
     def buf_in(self):
         _in=self.stdin.read(1)
         if _in == None or _in == '':
@@ -88,8 +90,12 @@ class AFTH:
         self.flst=flst
         del flst
     def make_wordlist(self):
-        for i in range(768):
-            self.wordlist.append('')
+        for i in range(640):
+            self.wordlist.append(' ')
+    def make_varlist(self):
+        for i in range(640):
+            self.varlist.append(0)
+            self.var.append(False)
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
@@ -358,7 +364,25 @@ class AFTH:
                 pass
         elif cmp[0]=='"':
             self.stack.append(ord(cmp[1])%128)
-        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 70:
+        elif cmp[0]=='F':
+            pass
+        elif cmp[0]=='<':
+            if var[cmp[1]%128]==True:
+                self.stack.append(varlist[cmp[1]%128])
+            else:
+                pass
+        elif cmp[0]=='>':
+            if var[cmp[1]%128]==True:
+                varlist[cmp[1]%128]=self.stack.pop()
+            else:
+                pass
+        elif cmp[0]=='=':
+            if var[cmp[1]%128]==True:
+                varlist[cmp[1]%128]=self.stack.pop()
+                self.stack.append(varlist[cmp[1]%128])
+            else:
+                pass
+        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 69:
             wnum=(ord(cmp[0])-65)*128+ord(cmp[1])%128
             for lc in range(len(self.wordlist[wnum])):
                 cmdch = self.wordlist[wnum][lc]
@@ -380,9 +404,24 @@ class AFTH:
         self.nmode=False
         if len(line) == 0:
             pass
-        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 70) and ord(line[2]) < 128:
+        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 69) and ord(line[2]) < 128:
             wnum=(ord(line[1])-65)*128+ord(line[2])%128
             self.wordlist[wnum]=line[4:]
+        elif line[0]==':' and ord(line[1]) == 70 and ord(line[2]) < 128:
+            vnum=ord(line[2])%128
+            self.varlist[vnum]=True
+            v=0
+            vstop=False
+            for i in range(len(line)-4):
+                if vstop==True:
+                    pass
+                elif ord(line[4+i]) >= 48 and ord(line[4+i]) <= 57:
+                    v=v*16+(ord(line[4+i])-48)
+                elif ord(line[4+i]) >= 97 and ord(line[4+i]) <= 102:
+                    v=v*16+(ord(line[4+i])-87)
+                else:
+                    vstop=True
+            self.var[vnum]=v
         elif line[0]=='"' and len(line) > 1:
             for i in range(len(line)-1):
                 self.stack.append(ord(line[len(line)-i-1]))
@@ -411,6 +450,7 @@ class AFTH:
     def run_file(self):
         runf=0
         self.make_wordlist()
+        self.make_varlist()
         l=0
         while l < len(self.flst) and l > -1:
             line = self.flst[l]
