@@ -215,13 +215,13 @@ class AFTH:
     def rcore_t_flipsign(self):
         self.t=self.t*-1
     def rmath_t_tl_add(self):
-        self.t=self.t+self.ti
+        self.t=self.t+self.tl
     def rmath_t_tl_mul(self):
-        self.t=self.t*self.ti
+        self.t=self.t*self.tl
     def rmath_t_tl_idiv(self):
-        self.t=self.t//self.ti
+        self.t=self.t//self.tl
     def rmath_t_tl_mod(self):
-        self.t=self.t%self.ti
+        self.t=self.t%self.tl
     def rmath_t_tl_pow(self):
         from math import floor
         self.t=floor(pow(self.t,self.tl))
@@ -250,14 +250,15 @@ class AFTH:
         self.buf_in_get()
         a=self.buf_in_pop()
         while a < 48 or a > 57:
-            d.append(a)
             self.buf_in_get()
             a=self.buf_in_pop()
         while a >= 48 and a <= 57:
-            b=b*10+(a-48)
+            d.append(a)
             self.buf_in_get()
             a=self.buf_in_pop()
-        self.t=a
+        for i in range(len(d)):
+            b=b*10+(d[i]-48)%10
+        self.t=b
     def rxtio_t_out_char(self):
         self.buf_out_put(chr(abs(self.t)%128))
     def rxtio_t_out_int(self):
