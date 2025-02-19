@@ -27,7 +27,7 @@ class AFTH:
         from sys import stdin, stdout
         self.fname=fname
         self.stack=[0,0,0]
-        self.cstack=[0,0,0]
+        self.stack2=[0,0,0]
         self.ibuf=b''
         self.obuf=b''
         self.lnum=0
@@ -162,8 +162,8 @@ class AFTH:
         self.wordlist_append('Oc','sy')
         self.wordlist_append('Id','WS')
         self.wordlist_append('Od','sY')
-        self.wordlist_append('Ih','eS')
-        self.wordlist_append('Oh','sE')
+        self.wordlist_append('Ih','mS')
+        self.wordlist_append('Oh','sM')
         self.wordlist_append('END','_q')
         self.wordlist_append('ABS','s|S')
         self.wordlist_append('NEG','s|-S')
@@ -173,6 +173,10 @@ class AFTH:
         self.t=self.stack.pop()
     def rcore_s_t(self):
         self.stack.append(self.t)
+    def rcore_t_s2(self):
+        self.t=self.stack2.pop()
+    def rcore_s2_t(self):
+        self.stack2.append(self.t)
     def rcore_t_f(self):
         self.t=self.tf
     def rcore_f_t(self):
@@ -197,10 +201,6 @@ class AFTH:
         self.t=self.tl
     def rcore_l_t(self):
         self.tl=self.t
-    def rcore_t_c(self):
-        self.t=self.cstack.pop()
-    def rcore_c_t(self):
-        self.cstack.append(self.t)
     def rcore_zte(self):
         if self.t == 0:
             self.tk=1
@@ -428,10 +428,10 @@ class AFTH:
             self.rcore_t_s()
         elif gch==b'S':
             self.rcore_s_t()
-        elif gch==b'c':
-            self.rcore_t_c()
-        elif gch==b'C':
-            self.rcore_c_t()
+        elif gch==b't':
+            self.rcore_t_s2()
+        elif gch==b'T':
+            self.rcore_s2_t()
         elif gch==b'f':
             self.rcore_t_f()
         elif gch==b'F':
@@ -526,9 +526,9 @@ class AFTH:
             self.rxtio_t_out_char()
         elif gch==b'Y':
             self.rxtio_t_out_int()
-        elif gch==b'e':
+        elif gch==b'm':
             self.rxtio_t_in_hex()
-        elif gch==b'E':
+        elif gch==b'M':
             self.rxtio_t_out_hex()
         else:
             pass
