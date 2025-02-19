@@ -1,5 +1,5 @@
 '''
-Afth Interpreter v0.1-alpha Library
+Afth Interpreter v0.1-alpha-1 Library
 
 Copyright (c) 2025 Sara Berman
 
@@ -781,6 +781,11 @@ class AFTH:
                 cmdch = self.wordlist[wnum][1][lc]
                 runw=runw+self.run_char(cmdch.encode())
                 self.buf_out()
+        elif cmp[0]=='!' and len(cmp) >= 2:
+            for lc in range(len(line)-1):
+                cmdch = line[lc+1]
+                runl=self.run_char(cmdch.encode())
+                self.buf_out()
         else:
             pass
         return runw%256
@@ -821,11 +826,6 @@ class AFTH:
             line2=line[1:]
             for i in range(len(line2)):
                 self.stack.append(ord(line2[len(line2)-i-1]))
-        elif line[0]=='!':
-            for lc in range(len(line)-1):
-                cmdch = line[lc+1]
-                runl=self.run_char(cmdch.encode())
-                self.buf_out()
         elif line[0]=='#':
             pass
         elif len(line)%4 == 3:
