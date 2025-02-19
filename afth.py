@@ -27,6 +27,7 @@ class AFTH:
         from sys import stdin, stdout
         self.fname=fname
         self.stack=[0,0,0]
+        self.cstack=[0,0,0]
         self.ibuf=b''
         self.obuf=b''
         self.lnum=0
@@ -136,6 +137,10 @@ class AFTH:
         self.t=self.tl
     def rcore_l_t(self):
         self.tl=self.t
+    def rcore_t_c(self):
+        self.t=self.cstack.pop()
+    def rcore_c_t(self):
+        self.cstack.append(self.t)
     def rcore_zte(self):
         if self.t == 0:
             self.tk=1
@@ -349,12 +354,24 @@ class AFTH:
             self.stack=[0,self.stack[0],self.stack[1]]
         else:
             pass
+        if len(self.cstack) == 0:
+            self.cstack=[0,0,0]
+        elif len(self.cstack) == 1:
+            self.cstack=[0,0,self.cstack[0]]
+        elif len(self.cstack) == 2:
+            self.cstack=[0,self.cstack[0],self.cstack[1]]
+        else:
+            pass
         if gch==b' ':
             pass
         elif gch==b's':
             self.rcore_t_s()
         elif gch==b'S':
             self.rcore_s_t()
+        elif gch==b'c':
+            self.rcore_t_c()
+        elif gch==b'C':
+            self.rcore_c_t()
         elif gch==b'f':
             self.rcore_t_f()
         elif gch==b'F':
