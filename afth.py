@@ -47,6 +47,7 @@ class AFTH:
         self.nmode=False
         self.wordlist=[]
         self.varlist=[]
+        self.bigarray=[]
     def buf_in(self):
         _in=self.stdin.read(1)
         if _in == None or _in == '':
@@ -169,6 +170,10 @@ class AFTH:
         self.wordlist_append('NEG','s|-S')
     def make_varlist(self):
         self.varlist.append([2147483647,0])
+    def make_bigarray(self):
+        i=0
+        for i in range(16384):
+            self.bigarray.append(0)
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
@@ -302,6 +307,48 @@ class AFTH:
     def rmath_t_tl_log(self):
         from math import floor,log
         self.t=floor(log(self.t,self.tl))
+    def rbarr_t_b(self):
+        self.t=self.bigarray[self.ti]
+    def rbarr_b_t(self):
+        self.bigarray[self.ti]=self.t
+    def rbarr_t_wordnum_tl_b(self):
+        i=0
+        t=self.t % 4
+        tl=self.tl
+        d=chr(self.bigarray[ti]%128)
+        for i in range(t+1):
+            d=d+chr(self.bigarray[tl+i+1])
+        self.t=self.wordnum_encode(d.encode())
+        self.tl=tl+i+1
+    def rbarr_t_varnum_tl_b(self):
+        d=''
+        i=0
+        t=self.t % 4
+        tl=self.tl
+        for i in range(t+1):
+            d=d+chr(self.bigarray[tl+i])
+        self.t=self.varnum_encode(d.encode())
+        self.tl=tl+i+1
+    def rbarr_word_b(self):
+        t=self.t
+        wn=self.bigarray[t]
+        t=t+1
+        d=''
+        c=chr(self.bigarray[t]%128)
+        while ord(c) >= 33 and ord(c) <= 127:
+            t=t+1
+            d=d+c
+            c=chr(self.bigarray[t]%128)
+        d=d+c
+        self.wordlist.append([wn,d])
+        self.t=t
+    def rbarr_var_b(self):
+        t=self.t
+        vn=self.bigarray[t]
+        t=t+1
+        v=self.bigarray[t]
+        self.varlist.append([vn,v])
+        self.t=t
     def rxtra_t_uptime_s(self):
         from time import monotonic
         self.t=monotonic()
@@ -510,6 +557,18 @@ class AFTH:
             self.rmath_t_tl_pow()
         elif gch==b'P':
             self.rmath_t_tl_log()
+        elif gch==b'b':
+            self.rbarr_t_b()
+        elif gch==b'B':
+            self.rbarr_b_t()
+        elif gch==b'c':
+            self.rbarr_t_wordnum_tl_b()
+        elif gch==b'C':
+            self.rbarr_t_varnum_tl_b()
+        elif gch==b'd':
+            self.rbarr_word_b()
+        elif gch==b'D':
+            self.rbarr_var_b()
         elif gch==b'u':
             self.rxtra_t_uptime_s()
         elif gch==b'U':
@@ -649,6 +708,7 @@ class AFTH:
         runf=0
         self.make_wordlist()
         self.make_varlist()
+        self.make_bigarray()
         l=0
         while l < len(self.flst) and l > -1:
             line = self.flst[l]
