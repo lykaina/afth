@@ -26,8 +26,8 @@ class AFTH:
     def __init__(self,fname):
         from sys import stdin, stdout
         self.fname=fname
-        self.stack=[0,0,0]
-        self.stack2=[0,0,0]
+        self.stack=[0]
+        self.stack2=[0]
         self.ibuf=b''
         self.obuf=b''
         self.lnum=0
@@ -307,9 +307,9 @@ class AFTH:
     def rmath_t_tl_log(self):
         from math import floor,log
         self.t=floor(log(self.t,self.tl))
-    def rbarr_t_b(self):
+    def rbarr_t_b_tl(self):
         self.t=self.bigarray[self.ti]
-    def rbarr_b_t(self):
+    def rbarr_b_t_tl(self):
         self.bigarray[self.ti]=self.t
     def rbarr_t_wordnum_tl_b(self):
         i=0
@@ -462,19 +462,11 @@ class AFTH:
     def run_char_meta(self,gmch=b' '):
         _ret=0
         if len(self.stack) == 0:
-            self.stack=[0,0,0]
-        elif len(self.stack) == 1:
-            self.stack=[0,0,self.stack[0]]
-        elif len(self.stack) == 2:
-            self.stack=[0,self.stack[0],self.stack[1]]
+            self.stack=[0]
         else:
             pass
-        if len(self.cstack) == 0:
-            self.cstack=[0,0,0]
-        elif len(self.cstack) == 1:
-            self.cstack=[0,0,self.cstack[0]]
-        elif len(self.cstack) == 2:
-            self.cstack=[0,self.cstack[0],self.cstack[1]]
+        if len(self.stack2) == 0:
+            self.stack2=[0]
         else:
             pass
         if gmch==b' ':
@@ -566,9 +558,9 @@ class AFTH:
         elif gmch==b'P':
             self.rmath_t_tl_log()
         elif gmch==b'b':
-            self.rbarr_t_b()
+            self.rbarr_t_b_tl()
         elif gmch==b'B':
-            self.rbarr_b_t()
+            self.rbarr_b_t_tl()
         elif gmch==b'c':
             self.rbarr_t_wordnum_tl_b()
         elif gmch==b'C':
@@ -618,19 +610,11 @@ class AFTH:
     def run_char(self,gch=b' '):
         ret=0
         if len(self.stack) == 0:
-            self.stack=[0,0,0]
-        elif len(self.stack) == 1:
-            self.stack=[0,0,self.stack[0]]
-        elif len(self.stack) == 2:
-            self.stack=[0,self.stack[0],self.stack[1]]
+            self.stack=[0]
         else:
             pass
-        if len(self.cstack) == 0:
-            self.cstack=[0,0,0]
-        elif len(self.cstack) == 1:
-            self.cstack=[0,0,self.cstack[0]]
-        elif len(self.cstack) == 2:
-            self.cstack=[0,self.cstack[0],self.cstack[1]]
+        if len(self.stack2) == 0:
+            self.stack2=[0]
         else:
             pass
         if gch==b' ':
@@ -722,9 +706,9 @@ class AFTH:
         elif gch==b'P':
             self.rmath_t_tl_log()
         elif gch==b'b':
-            self.rbarr_t_b()
+            self.rbarr_t_b_tl()
         elif gch==b'B':
-            self.rbarr_b_t()
+            self.rbarr_b_t_tl()
         elif gch==b'c':
             self.rbarr_t_wordnum_tl_b()
         elif gch==b'C':
