@@ -91,22 +91,82 @@ class AFTH:
         del befile_lst
         self.flst=flst
         del flst
+    def wordnum_encode(self,s=b''):
+        scale=[2444,232180,21827364,2051774660]
+        wn=scale[3]
+        if len(s) < 2 or len(s) > 5:
+            pass
+        elif len(s)==2:
+            wn=(s[0]-65)*94+(s[1]-33)
+        elif len(s)==3:
+            wn=scale[0]+(s[0]-65)*94*94+(s[1]-33)*94+(s[2]-33)
+        elif len(s)==4:
+            wn=scale[1]+(s[0]-65)*94*94*94+(s[1]-33)*94*94+(s[2]-33)*94+(s[3]-33)
+        elif len(s)==5:
+            wn=scale[2]+(s[0]-65)*94*94*94*94+(s[1]-33)*94*94*94+(s[2]-33)*94*94+(s[3]-33)*94+(s[4]-33)
+        else:
+            pass
+        return wn
+    def wordnum_decode(self,wn=2051774660):
+        scale=[2444,232180,21827364,2051774660]
+        if wn>=scale[3]:
+            return b'A!!!!!'
+        elif wn < scale[0]:
+            return (chr(wn//94+65)+chr(wn%94+33)).encode()
+        elif wn < scale[1]:
+            return (chr((wn-scale[0])//(94*94)+65)+chr(((wn-scale[0])//94)%94+33)+chr((wn-scale[0])%94+33)).encode()
+        elif wn < scale[2]:
+            return (chr((wn-scale[1])//(94*94*94)+65)+chr(((wn-scale[1])//(94*94))%94+33)+chr(((wn-scale[1])//94)%94+33)+chr((wn-scale[1])%94+33)).encode()
+        else:
+            return (chr((wn-scale[2])//(94*94*94*94)+65)+chr(((wn-scale[2])//(94*94*94))%94+33)+chr(((wn-scale[2])//(94*94))%94+33)+chr(((wn-scale[2])//94)%94+33)+chr((wn-scale[2])%94+33)).encode()
+    def varnum_encode(self,s=b''):
+        scale=[94,8930,839514,78914410]
+        wn=scale[3]
+        if len(s) < 1 or len(s) > 4:
+            pass
+        elif len(s)==1:
+            n=(s[0]-33)
+        elif len(s)==2:
+            n=scale[0]+(s[0]-33)*94+(s[1]-33)
+        elif len(s)==3:
+            n=scale[1]+(s[0]-33)*94*94+(s[1]-33)*94+(s[2]-33)
+        elif len(s)==4:
+            n=scale[2]+(s[0]-33)*94*94*94+(s[1]-33)*94*94+(s[2]-33)*94+(s[3]-33)
+        else:
+            pass
+        return n
+    def varnum_decode(self,n=78914410):
+        scale=[94,8930,839514,78914410]
+        if n>=scale[3]:
+            return b'!!!!!'
+        elif n < scale[0]:
+            return (chr(n+33)).encode()
+        elif n < scale[1]:
+            return (chr(((n-scale[0])//94)%94+33)+chr((n-scale[0])%94+33)).encode()
+        elif n < scale[2]:
+            return (chr(((n-scale[1])//(94*94))%94+33)+chr(((n-scale[1])//94)%94+33)+chr((n-scale[1])%94+33)).encode()
+        else:
+            return (chr(((n-scale[2])//(94*94*94))%94+33)+chr(((n-scale[2])//(94*94))%94+33)+chr(((n-scale[2])//94)%94+33)+chr((n-scale[2])%94+33)).encode()
+    def wordlist_append(self,s,cs):
+        self.wordlist.append([self.wordnum_encode(s.encode()),cs])
+    def varlist_append(self,s,n):
+        self.varlist.append([self.varnum_encode(s.encode()),n])
     def make_wordlist(self):
-        self.wordlist.append(['NUL',' '])
-        self.wordlist.append(['A_+','sLs+S'])
-        self.wordlist.append(['A_-','s-Ls+S'])
-        self.wordlist.append(['A_*','sLs*S'])
-        self.wordlist.append(['A_/','sLs/S'])
-        self.wordlist.append(['A_%','sLs%S'])
-        self.wordlist.append(['I_c','wS'])
-        self.wordlist.append(['O_c','sy'])
-        self.wordlist.append(['I_d','WS'])
-        self.wordlist.append(['O_d','sY'])
-        self.wordlist.append(['I_h','eS'])
-        self.wordlist.append(['O_h','sE'])
-        self.wordlist.append(['END','_q'])
-        self.wordlist.append(['ABS','s|S'])
-        self.wordlist.append(['NEG','s|-S'])
+        self.wordlist_append('NUL',' ')
+        self.wordlist_append('A+','sLs+S')
+        self.wordlist_append('A-','s-Ls+S')
+        self.wordlist_append('A*','sLs*S')
+        self.wordlist_append('A/','sLs/S')
+        self.wordlist_append('A%','sLs%S')
+        self.wordlist_append('Ic','wS')
+        self.wordlist_append('Oc','sy')
+        self.wordlist_append('Id','WS')
+        self.wordlist_append('Od','sY')
+        self.wordlist_append('Ih','eS')
+        self.wordlist_append('Oh','sE')
+        self.wordlist_append('END','_q')
+        self.wordlist_append('ABS','s|S')
+        self.wordlist_append('NEG','s|-S')
     def make_varlist(self):
         self.varlist.append([2147483647,0])
     def rcore_t_s(self):
@@ -475,67 +535,52 @@ class AFTH:
         return ret
     def run_tri(self,cmp):
         runw=0
-        if cmp[0]=="'":
+        if cmp[0]==';':
+            pass
+        elif cmp[0]=="'" and len(cmp)>=2:
             self.stack.append(ord(cmp[1])%128)
         elif cmp[0]=='<':
-            vn=((ord(cmp[1])-33)%94)*94+((ord(cmp[2])-33)%94)
+            vn=varnum_decode(cmp[1:].encode())
             vln=0
             for i in range(len(self.varlist)):
                 if self.varlist[i][0]==vn:
                     vln=i
             self.stack.append(self.varlist[vln][1])
         elif cmp[0]=='>':
-            vn=((ord(cmp[1])-33)%94)*94+((ord(cmp[2])-33)%94)
+            vn=varnum_decode(cmp[1:].encode())
             vln=0
             for i in range(len(self.varlist)):
                 if self.varlist[i][0]==vn:
                     vln=i
             self.varlist[vn][1]=self.stack.pop()
         elif cmp[0]=='=':
-            vn=((ord(cmp[1])-33)%94)*94+((ord(cmp[2])-33)%94)
+            vn=varnum_encode(cmp[1:].encode())
             vln=0
             for i in range(len(self.varlist)):
                 if self.varlist[i][0]==vn:
                     vln=i
             self.varlist[vn][1]=self.stack.pop()
             self.stack.append(self.varlist[vln][1])
-        elif cmp[0]=='#':
-            v=256
-            if ord(cmp[1]) >= 48 and ord(cmp[1]) <= 57:
-                if ord(cmp[2]) >= 48 and ord(cmp[2]) <= 57:
-                    v=(ord(cmp[1])-48)*16+(ord(cmp[2])-48)
-                elif ord(cmp[2]) >= 65 and ord(cmp[2]) <= 70:
-                    v=(ord(cmp[1])-48)*16+(ord(cmp[2])-55)
-                elif ord(cmp[2]) >= 97 and ord(cmp[2]) <= 102:
-                    v=(ord(cmp[1])-48)*16+(ord(cmp[2])-87)
-                else:
+        elif cmp[0]=='+' and len(cmp) >= 2:
+            v=0
+            vstop=False
+            for i in range(len(cmp)-1):
+                if vstop==True:
                     pass
-            elif ord(cmp[1]) >= 65 and ord(cmp[1]) <= 70:
-                if ord(cmp[2]) >= 48 and ord(cmp[2]) <= 57:
-                    v=(ord(cmp[1])-55)*16+(ord(cmp[2])-48)
-                elif ord(cmp[2]) >= 65 and ord(cmp[2]) <= 70:
-                    v=(ord(cmp[1])-55)*16+(ord(cmp[2])-55)
-                elif ord(cmp[2]) >= 97 and ord(cmp[2]) <= 102:
-                    v=(ord(cmp[1])-55)*16+(ord(cmp[2])-87)
+                elif ord(cmp[1+i]) >= 48 and ord(cmp[1+i]) <= 57:
+                    v=v*16+(ord(cmp[1+i])-48)
+                elif ord(cmp[1+i]) >= 65 and ord(cmp[1+i]) <= 70:
+                    v=v*16+(ord(cmp[1+i])-55)
+                elif ord(cmp[1+i]) >= 97 and ord(cmp[1+i]) <= 102:
+                    v=v*16+(ord(cmp[1+i])-87)
                 else:
-                    pass
-            elif ord(cmp[1]) >= 97 and ord(cmp[1]) <= 102:
-                if ord(cmp[2]) >= 48 and ord(cmp[2]) <= 57:
-                    v=(ord(cmp[1])-87)*16+(ord(cmp[2])-48)
-                elif ord(cmp[2]) >= 65 and ord(cmp[2]) <= 70:
-                    v=(ord(cmp[1])-87)*16+(ord(cmp[2])-55)
-                elif ord(cmp[2]) >= 97 and ord(cmp[2]) <= 102:
-                    v=(ord(cmp[1])-87)*16+(ord(cmp[2])-87)
-                else:
-                    pass
-            else:
-                pass
-            if v<256:
-                self.stack.append(v)
+                    vstop=True
+            self.stack.append(v)
         elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90:
+            wn=self.wordnum_encode(cmp.encode())
             wnum=0
             for i in range(len(self.wordlist)):
-                if self.wordlist[i][0]==cmp:
+                if self.wordlist[i][0]==wn:
                     wnum=i
             for lc in range(len(self.wordlist[wnum][1])):
                 cmdch = self.wordlist[wnum][1][lc]
@@ -557,54 +602,42 @@ class AFTH:
         self.tl=0
         if len(line) == 0:
             pass
-        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 90) and ord(line[2]) < 128 and ord(line[3]) < 128 and len(line) >= 6:
-            wname=line[1]+line[2]+line[3]
-            self.wordlist.append([wname,line[5:]])
-        elif line[0]=='$' and ord(line[1]) < 128 and len(line) >= 5:
-            vnum=((ord(line[1])-33)%94)*94+((ord(line[2])-33)%94)
+        elif line[0]==':' and (ord(line[1]) >= 65 and ord(line[1]) <= 90):
+            lines=line.split(' ')
+            self.wordlist_append(lines[0][1:],lines[1])
+        elif line[0]=='$' and ord(line[1]) >= 33 and ord(line[1]) <= 127:
+            lines=line.split(' ')
+            vname=lines[0][1:]
             v=0
             vstop=False
-            for i in range(len(line)-4):
+            for i in range(len(lines[1])):
                 if vstop==True:
                     pass
-                elif ord(line[4+i]) >= 48 and ord(line[4+i]) <= 57:
-                    v=v*16+(ord(line[4+i])-48)
-                elif ord(line[4+i]) >= 65 and ord(line[4+i]) <= 70:
-                    v=v*16+(ord(line[4+i])-55)
-                elif ord(line[4+i]) >= 97 and ord(line[4+i]) <= 102:
-                    v=v*16+(ord(line[4+i])-87)
+                elif ord(lines[1][i]) >= 48 and ord(lines[1][i]) <= 57:
+                    v=v*16+(ord(lines[1][i])-48)
+                elif ord(lines[1][i]) >= 65 and ord(line[1][i]) <= 70:
+                    v=v*16+(ord(lines[1][i])-55)
+                elif ord(lines[1][i]) >= 97 and ord(lines[1][i]) <= 102:
+                    v=v*16+(ord(lines[1][i])-87)
                 else:
                     vstop=True
-            self.varlist.append([vnum,v])
-        elif line[0]=='+' and len(line) >= 2:
-            v=0
-            vstop=False
-            for i in range(len(line)-1):
-                if vstop==True:
-                    pass
-                elif ord(line[1+i]) >= 48 and ord(line[1+i]) <= 57:
-                    v=v*16+(ord(line[1+i])-48)
-                elif ord(line[1+i]) >= 65 and ord(line[1+i]) <= 70:
-                    v=v*16+(ord(line[1+i])-55)
-                elif ord(line[1+i]) >= 97 and ord(line[1+i]) <= 102:
-                    v=v*16+(ord(line[1+i])-87)
-                else:
-                    vstop=True
-            self.varlist.append([vnum,v])
+            self.varlist_append(vname,v)
         elif line[0]=='"' and len(line) >= 2:
-            for i in range(len(line)-1):
-                self.stack.append(ord(line[len(line)-i-1]))
+            line2=line[1:]
+            for i in range(len(line2)):
+                self.stack.append(ord(line2[len(line2)-i-1]))
         elif line[0]=='!':
             for lc in range(len(line)-1):
                 cmdch = line[lc+1]
                 runl=self.run_char(cmdch.encode())
                 self.buf_out()
-        elif line[0]==';':
+        elif line[0]=='#':
             pass
         elif len(line)%4 == 3:
             runp=0
-            for i in range((len(line))//4+1):
-                cmdtri=line[(i*4):3+(i*4)]
+            lines=line.split(' ')
+            for i in range(len(lines)):
+                cmdtri=lines[i]
                 runp=runp+self.run_tri(cmdtri)
             runl=runp%256
         else:
