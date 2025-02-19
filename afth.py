@@ -451,6 +451,170 @@ class AFTH:
                 o=o+chr(48+n)
         o=o+' '
         self.buf_out_put(o)
+    def rmeta_t_var(self):
+        t=self.t
+        i=0
+        vnum=0
+        for i in range(len(self.varlist)):
+            if t == self.varlist[i][0]:
+                vnum=i
+        self.t=self.wordlist[vnum][1]
+    def run_char_meta(self,gmch=b' '):
+        _ret=0
+        if len(self.stack) == 0:
+            self.stack=[0,0,0]
+        elif len(self.stack) == 1:
+            self.stack=[0,0,self.stack[0]]
+        elif len(self.stack) == 2:
+            self.stack=[0,self.stack[0],self.stack[1]]
+        else:
+            pass
+        if len(self.cstack) == 0:
+            self.cstack=[0,0,0]
+        elif len(self.cstack) == 1:
+            self.cstack=[0,0,self.cstack[0]]
+        elif len(self.cstack) == 2:
+            self.cstack=[0,self.cstack[0],self.cstack[1]]
+        else:
+            pass
+        if gmch==b' ':
+            pass
+        elif gmch==b's':
+            self.rcore_t_s()
+        elif gmch==b'S':
+            self.rcore_s_t()
+        elif gmch==b't':
+            self.rcore_t_s2()
+        elif gmch==b'T':
+            self.rcore_s2_t()
+        elif gmch==b'f':
+            self.rcore_t_f()
+        elif gmch==b'F':
+            self.rcore_f_t()
+        elif gmch==b'g':
+            self.rcore_t_g()
+        elif gmch==b'G':
+            self.rcore_g_t()
+        elif gmch==b'h':
+            self.rcore_t_h()
+        elif gmch==b'H':
+            self.rcore_h_t()
+        elif gmch==b'i':
+            self.rcore_t_i()
+        elif gmch==b'I':
+            self.rcore_i_t()
+        elif gmch==b'j':
+            self.rcore_jnz_r()
+        elif gmch==b'J':
+            self.rcore_jnz_a()
+        elif gmch==b'k':
+            self.rcore_t_k()
+        elif gmch==b'K':
+            self.rcore_k_t()
+        elif gmch==b'l':
+            self.rcore_t_l()
+        elif gmch==b'L':
+            self.rcore_l_t()
+        elif gmch==b'q':
+            self.rcore_quit()
+        elif gmch==b'Q':
+            self.rcore_quit_ifkz()
+        elif gmch==b'n':
+            self.rcore_not_tk()
+        elif gmch==b'a':
+            self.rcore_and_tk()
+        elif gmch==b'o':
+            self.rcore_or_tk()
+        elif gmch==b'x':
+            self.rcore_xor_tk()
+        elif gmch==b'N':
+            self.rcore_not_tl()
+        elif gmch==b'A':
+            self.rcore_and_tl()
+        elif gmch==b'O':
+            self.rcore_or_tl()
+        elif gmch==b'X':
+            self.rcore_xor_tl()
+        elif gmch==b'z':
+            self.rcore_zte()
+        elif gmch==b'Z':
+            self.rcore_ztg()
+        elif gmch==b'_':
+            self.rcore_t_zero()
+        elif gmch==b'^':
+            self.rcore_t_inc()
+        elif gmch==b'v':
+            self.rcore_t_dec()
+        elif gmch==b'<':
+            self.rcore_t_shl()
+        elif gmch==b'>':
+            self.rcore_t_shr()
+        elif gmch==b'|':
+            self.rcore_t_abs()
+        elif gmch==b'-':
+            self.rcore_t_flipsign()
+        elif gmch==b'+':
+            self.rmath_t_tl_add()
+        elif gmch==b'*':
+            self.rmath_t_tl_mul()
+        elif gmch==b'/':
+            self.rmath_t_tl_idiv()
+        elif gmch==b'%':
+            self.rmath_t_tl_mod()
+        elif gmch==b'p':
+            self.rmath_t_tl_pow()
+        elif gmch==b'P':
+            self.rmath_t_tl_log()
+        elif gmch==b'b':
+            self.rbarr_t_b()
+        elif gmch==b'B':
+            self.rbarr_b_t()
+        elif gmch==b'c':
+            self.rbarr_t_wordnum_tl_b()
+        elif gmch==b'C':
+            self.rbarr_t_varnum_tl_b()
+        elif gmch==b'd':
+            self.rbarr_word_b()
+        elif gmch==b'D':
+            self.rbarr_var_b()
+        elif gmch==b'u':
+            self.rxtra_t_uptime_s()
+        elif gmch==b'U':
+            self.rxtra_t_uptime_ns()
+        elif gmch==b'r':
+            self.rxtra_t_randint()
+        elif gmch==b'R':
+            self.rxtra_t_randseed()
+        elif gmch==b'w':
+            self.rxtio_t_in_char()
+        elif gmch==b'W':
+            self.rxtio_t_in_int()
+        elif gmch==b'y':
+            self.rxtio_t_out_char()
+        elif gmch==b'Y':
+            self.rxtio_t_out_int()
+        elif gmch==b'm':
+            self.rxtio_t_in_hex()
+        elif gmch==b'M':
+            self.rxtio_t_out_hex()
+        elif gmch==b'E':
+            self.rmeta_t_var()
+        else:
+            pass
+        return _ret
+    def rmeta_run_word_t(self):
+        _t=self.t
+        _i=0
+        _runw=0
+        _wnum=0
+        for _i in range(len(self.wordlist)):
+            if _t == self.wordlist[i][0]:
+                _wnum=_i
+        for _lc in range(len(self.wordlist[wnum][1])):
+            _cmdch = self.wordlist[_wnum][1][_lc]
+            _runw=_runw+self.run_char_meta(_cmdch.encode())
+            self.buf_out()
+        self.t=_runw%256
     def run_char(self,gch=b' '):
         ret=0
         if len(self.stack) == 0:
@@ -589,6 +753,10 @@ class AFTH:
             self.rxtio_t_in_hex()
         elif gch==b'M':
             self.rxtio_t_out_hex()
+        elif gch==b'e':
+            self.rmeta_run_word_t()
+        elif gch==b'E':
+            self.rmeta_t_var()
         else:
             pass
         return ret
