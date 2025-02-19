@@ -26,8 +26,8 @@ class AFTH:
     def __init__(self,fname):
         from sys import stdin, stdout
         self.fname=fname
-        self.stack=[0]
-        self.stack2=[0]
+        self.stack=[]
+        self.stack2=[]
         self.ibuf=b''
         self.obuf=b''
         self.lnum=0
@@ -461,14 +461,6 @@ class AFTH:
         self.t=self.wordlist[vnum][1]
     def run_char_meta(self,gmch=b' '):
         _ret=0
-        if len(self.stack) == 0:
-            self.stack=[0]
-        else:
-            pass
-        if len(self.stack2) == 0:
-            self.stack2=[0]
-        else:
-            pass
         if gmch==b' ':
             pass
         elif gmch==b's':
@@ -609,14 +601,6 @@ class AFTH:
         self.t=_runw%256
     def run_char(self,gch=b' '):
         ret=0
-        if len(self.stack) == 0:
-            self.stack=[0]
-        else:
-            pass
-        if len(self.stack2) == 0:
-            self.stack2=[0]
-        else:
-            pass
         if gch==b' ':
             pass
         elif gch==b's':
