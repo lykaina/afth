@@ -108,7 +108,7 @@ class AFTH:
         self.wordlist.append(['ABS','s|S'])
         self.wordlist.append(['NEG','s|-S'])
     def make_varlist(self):
-        self.varlist.append([65535,0])
+        self.varlist.append([2147483647,0])
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
@@ -532,7 +532,7 @@ class AFTH:
                 pass
             if v<256:
                 self.stack.append(v)
-        elif (ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90) or (ord(cmp[0]) >= 97 and ord(cmp[0]) <= 122):
+        elif ord(cmp[0]) >= 65 and ord(cmp[0]) <= 90:
             wnum=0
             for i in range(len(self.wordlist)):
                 if self.wordlist[i][0]==cmp:
