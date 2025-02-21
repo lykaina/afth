@@ -431,14 +431,14 @@ class AFTH:
                 pass
         self.t=b
     def rxtio_t_out_hex(self):
-        from math import floor,log
+        from math import floor,ceil,log
         a=self.t
         j=0
         l=0
         s=0
         o=''
         if a != 0:
-            l=floor(log(abs(a),16))
+            l=floor(log(abs(a),256))
             s=a//abs(a)
         else:
             l=0
@@ -448,11 +448,17 @@ class AFTH:
         else:
             pass
         for j in range(l+1):
-            n=(abs(a)//pow(16,l-j))%16
-            if n >= 10:
-                o=o+chr(97+n)
+            n=(abs(a)//ceil(pow(256,l-j)))%256
+            m=(n//16)%16
+            if m >= 10:
+                o=o+chr(87+m)
             else:
-                o=o+chr(48+n)
+                o=o+chr(48+m)
+            m=n%16
+            if m >= 10:
+                o=o+chr(87+m)
+            else:
+                o=o+chr(48+m)
         o=o+' '
         self.buf_out_put(o)
     def rmeta_t_var(self):
