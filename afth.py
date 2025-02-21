@@ -1,5 +1,5 @@
 '''
-Afth Interpreter v0.1-alpha-1 Library
+Afth Interpreter v0.1-alpha-3 Library
 
 Copyright (c) 2025 Sara Berman
 
