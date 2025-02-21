@@ -182,6 +182,10 @@ class AFTH:
         self.t=self.stack2.pop()
     def rcore_s2_t(self):
         self.stack2.append(self.t)
+    def rcore_t_len_s(self):
+        self.t=len(self.stack)
+    def rcore_t_len_s2(self):
+        self.t=len(self.stack2)
     def rcore_t_f(self):
         self.t=self.tf
     def rcore_f_t(self):
@@ -471,6 +475,10 @@ class AFTH:
             self.rcore_t_s2()
         elif gmch==b'T':
             self.rcore_s2_t()
+        elif gmch==b'.':
+            self.rcore_t_len_s()
+        elif gmch==b':':
+            self.rcore_t_len_s2()
         elif gmch==b'f':
             self.rcore_t_f()
         elif gmch==b'F':
@@ -611,6 +619,10 @@ class AFTH:
             self.rcore_t_s2()
         elif gch==b'T':
             self.rcore_s2_t()
+        elif gch==b'.':
+            self.rcore_t_len_s()
+        elif gch==b':':
+            self.rcore_t_len_s2()
         elif gch==b'f':
             self.rcore_t_f()
         elif gch==b'F':
