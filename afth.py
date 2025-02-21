@@ -798,8 +798,8 @@ class AFTH:
                 runw=runw+self.run_char(cmdch.encode())
                 self.buf_out()
         elif cmp[0]=='!' and len(cmp) >= 2:
-            for lc in range(len(line)-1):
-                cmdch = line[lc+1]
+            for lc in range(len(cmp)-1):
+                cmdch = cmp[lc+1]
                 runl=self.run_char(cmdch.encode())
                 self.buf_out()
         else:
@@ -844,15 +844,13 @@ class AFTH:
                 self.stack.append(ord(line2[len(line2)-i-1]))
         elif line[0]=='#':
             pass
-        elif len(line)%4 == 3:
+        else:
             runp=0
             lines=line.split(' ')
             for i in range(len(lines)):
                 cmdtri=lines[i]
                 runp=runp+self.run_tri(cmdtri)
             runl=runp%256
-        else:
-            pass
         if self.j==False:
             self.lnum=self.lnum+1
         return runl
