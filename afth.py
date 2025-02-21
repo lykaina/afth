@@ -465,7 +465,9 @@ class AFTH:
         self.t=self.wordlist[vnum][1]
     def run_char_meta(self,gmch=b' '):
         _ret=0
-        if gmch==b' ':
+        if self.j==True:
+            pass
+        elif gmch==b' ':
             pass
         elif gmch==b's':
             self.rcore_t_s()
@@ -609,7 +611,9 @@ class AFTH:
         self.t=_runw%256
     def run_char(self,gch=b' '):
         ret=0
-        if gch==b' ':
+        if self.j==True:
+            pass
+        elif gch==b' ':
             pass
         elif gch==b's':
             self.rcore_t_s()
