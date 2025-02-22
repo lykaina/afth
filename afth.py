@@ -609,9 +609,10 @@ class AFTH:
             if _t == self.wordlist[i][0]:
                 _wnum=_i
         for _lc in range(len(self.wordlist[wnum][1])):
-            _cmdch = self.wordlist[_wnum][1][_lc]
-            _runw=_runw+self.run_char_meta(_cmdch.encode())
-            self.buf_out()
+            if self.j==False:
+                _cmdch = self.wordlist[_wnum][1][_lc]
+                _runw=_runw+self.run_char_meta(_cmdch.encode())
+                self.buf_out()
         self.t=_runw%256
     def run_char(self,gch=b' '):
         ret=0
@@ -798,14 +799,16 @@ class AFTH:
                 if self.wordlist[i][0]==wn:
                     wnum=i
             for lc in range(len(self.wordlist[wnum][1])):
-                cmdch = self.wordlist[wnum][1][lc]
-                runw=runw+self.run_char(cmdch.encode())
-                self.buf_out()
+                if self.j == False:
+                    cmdch = self.wordlist[wnum][1][lc]
+                    runw=runw+self.run_char(cmdch.encode())
+                    self.buf_out()
         elif cmp[0]=='!' and len(cmp) >= 2:
             for lc in range(len(cmp)-1):
-                cmdch = cmp[lc+1]
-                runl=self.run_char(cmdch.encode())
-                self.buf_out()
+                if self.j == False:
+                    cmdch = cmp[lc+1]
+                    runl=self.run_char(cmdch.encode())
+                    self.buf_out()
         else:
             pass
         return runw%256
