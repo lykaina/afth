@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Afth Interpreter v0.1-alpha-3 Wrapper
+Afth Interpreter v0.1-alpha-4 Wrapper
 
 Copyright (c) 2025 Sara Berman
 
