@@ -1,11 +1,6 @@
-:DUP sSS
-:L_NZ sK_j
-:JNZ_r sFsKfj
-:DROP s_
-:T#OUT svFsyfS
 +0a
-"RPN CALC
-+09
+"CALC
++05
 T#OUT DUP L_NZ
 Id Id Ic Ic DROP
 DUP '+ A- +01 JNZ_r DROP A+ Od END

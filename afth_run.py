@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Afth Interpreter v0.1-alpha-4 Wrapper
+Afth Interpreter v0.2-alpha-0 Wrapper
 
 Copyright (c) 2025 Sara Berman
 
@@ -28,8 +28,9 @@ def wrapper():
     import argparse
     import afth
     parser = argparse.ArgumentParser("afth_run")
-    parser.add_argument('file', help='File Name', type=str)
+    parser.add_argument('file', help='Program File', type=str)
+    parser.add_argument('-d', '--dict', type=str, default='dict.afth', help='Set dictionary file. (default=dict.afth)')
     args = parser.parse_args()
-    afth.main(args.file)
+    afth.main(args.dict, args.file)
 
 wrapper()

@@ -1,5 +1,5 @@
 '''
-Afth Interpreter v0.1-alpha-4 Library
+Afth Interpreter v0.2-alpha-0 Library
 
 Copyright (c) 2025 Sara Berman
 
@@ -23,9 +23,12 @@ SOFTWARE.
 '''
 
 class AFTH:
-    def __init__(self,fname):
+    def __init__(self,dname,fname):
         from sys import stdin, stdout
+        self.dname=dname
         self.fname=fname
+        self.dlen=0
+        self.flen=0
         self.stack=[]
         self.stack2=[]
         self.ibuf=b''
@@ -81,15 +84,24 @@ class AFTH:
         else:
             self.obuf=self.obuf+chin.encode()
     def open_file(self):
-        befile = open(self.fname,'rt')
-        befile_lst = befile.readlines()
-        befile.close()
-        del befile
+        adict = open(self.dname,'rt')
+        adict_lst = adict.readlines()
+        adict.close()
+        del adict
+        afile = open(self.fname,'rt')
+        afile_lst = afile.readlines()
+        afile.close()
+        del afile
         flst = []
+        self.dlen=len(adict_lst)
+        self.flen=len(afile_lst)
         i=0
-        for i in range(len(befile_lst)):
-            flst.append(befile_lst[i].strip('\n').strip('\r'))
-        del befile_lst
+        for i in range(len(adict_lst)):
+            flst.append(adict_lst[i].strip('\n').strip('\r'))
+        del adict_lst
+        for i in range(len(afile_lst)):
+            flst.append(afile_lst[i].strip('\n').strip('\r'))
+        del afile_lst
         self.flst=flst
         del flst
     def wordnum_encode(self,s=b''):
@@ -153,21 +165,7 @@ class AFTH:
     def varlist_append(self,s,n):
         self.varlist.append([self.varnum_encode(s.encode()),n])
     def make_wordlist(self):
-        self.wordlist_append('NUL',' ')
-        self.wordlist_append('A+','sLs+S')
-        self.wordlist_append('A-','s-Ls+S')
-        self.wordlist_append('A*','sLs*S')
-        self.wordlist_append('A/','sLs/S')
-        self.wordlist_append('A%','sLs%S')
-        self.wordlist_append('Ic','wS')
-        self.wordlist_append('Oc','sy')
-        self.wordlist_append('Id','WS')
-        self.wordlist_append('Od','sY')
-        self.wordlist_append('Ih','mS')
-        self.wordlist_append('Oh','sM')
-        self.wordlist_append('END','_q')
-        self.wordlist_append('ABS','s|S')
-        self.wordlist_append('NEG','s|-S')
+        self.wordlist.append([2147483647,' '])
     def make_varlist(self):
         self.varlist.append([2147483647,0])
     def make_bigarray(self):
@@ -272,7 +270,7 @@ class AFTH:
             pass
     def rcore_jnz_a(self):
         if self.tk != 0:
-            self.lnum=self.t
+            self.lnum=self.dlen+self.t
             self.j=True
         else:
             pass
@@ -872,10 +870,10 @@ class AFTH:
             l=self.lnum
         return runf
 
-def main(file):
+def main(afth_dict,file):
     import gc
     from sys import exit as sys_exit
-    afth=AFTH(file)
+    afth=AFTH(afth_dict,file)
     afth.open_file()
     gc.collect()
     r=afth.run_file()
