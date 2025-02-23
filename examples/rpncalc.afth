@@ -1,4 +1,4 @@
-+0a
+LF
 "RPN CALC
 +02 JSiGr
 +02 JUMPr
@@ -17,7 +17,7 @@ DUP '/ A- +02 JNZ_r
 DROP A/ +0a NEG JUMPr
 DUP '% A- +02 JNZ_r
 DROP A% +0c NEG JUMPr
-DROP +0a
+DROP LF
 "ERROR...
 +02 JSiGr
 +02 JUMPr
