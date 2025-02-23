@@ -283,14 +283,16 @@ class AFTH:
             sys_exit(self.t)
     def rcore_t_zero(self):
         self.t=0
-    def rcore_t_inc(self):
-        self.t=self.t+1
-    def rcore_t_dec(self):
-        self.t=self.t-1
+    def rcore_t_shl_inc(self):
+        self.t=self.t*2+1
+    #def rcore_t_inc(self):
+    #    self.t=self.t+1
+    #def rcore_t_dec(self):
+    #    self.t=self.t-1
     def rcore_t_shl(self):
         self.t=self.t*2
-    def rcore_t_shr(self):
-        self.t=self.t//2
+    #def rcore_t_shr(self):
+    #    self.t=self.t//2
     def rcore_t_abs(self):
         self.t=abs(self.t)
     def rcore_t_flipsign(self):
@@ -537,14 +539,10 @@ class AFTH:
             self.rcore_ztg()
         elif gmch==b'_':
             self.rcore_t_zero()
-        elif gmch==b'^':
-            self.rcore_t_inc()
-        elif gmch==b'v':
-            self.rcore_t_dec()
-        elif gmch==b'<':
+        elif gmch==b'0':
             self.rcore_t_shl()
-        elif gmch==b'>':
-            self.rcore_t_shr()
+        elif gmch==b'1':
+            self.rcore_t_shl_inc()
         elif gmch==b'|':
             self.rcore_t_abs()
         elif gmch==b'-':
@@ -682,14 +680,10 @@ class AFTH:
             self.rcore_ztg()
         elif gch==b'_':
             self.rcore_t_zero()
-        elif gch==b'^':
-            self.rcore_t_inc()
-        elif gch==b'v':
-            self.rcore_t_dec()
-        elif gch==b'<':
+        elif gch==b'0':
             self.rcore_t_shl()
-        elif gch==b'>':
-            self.rcore_t_shr()
+        elif gch==b'1':
+            self.rcore_t_shl_inc()
         elif gch==b'|':
             self.rcore_t_abs()
         elif gch==b'-':

@@ -15,11 +15,11 @@
 :DUP sSS
 :L_NZ sK_j
 :JNZ_r sFsKfj
-:JUMPr sF_^Kfj
-:JUMP sF_^KfJ
+:JUMPr sF_1Kfj
+:JUMP sF_1KfJ
 :DROP s_
 :PUSH S
 :JSiGr sF.Zfj
 :Si .S
-:CR _^<^<<^S
-:LF _^<<^<S
+:CR _1101S
+:LF _1010S
