@@ -1,5 +1,5 @@
 '''
-Afth Interpreter v0.2-alpha-1 Library
+Afth Interpreter v0.3-alpha-1 Library
 
 Copyright (c) 2025 Sara Berman
 
@@ -50,7 +50,7 @@ class AFTH:
         self.nmode=False
         self.wordlist=[]
         self.varlist=[]
-        self.bigarray=[]
+        self.strarray=[]
     def buf_in(self):
         _in=self.stdin.read(1)
         if _in == None or _in == '':
@@ -168,10 +168,10 @@ class AFTH:
         self.wordlist.append([2147483647,' '])
     def make_varlist(self):
         self.varlist.append([2147483647,0])
-    def make_bigarray(self):
+    def make_strarray(self):
         i=0
-        for i in range(16384):
-            self.bigarray.append(0)
+        for i in range(256):
+            self.strarray.append(0)
     def rcore_t_s(self):
         self.t=self.stack.pop()
     def rcore_s_t(self):
@@ -312,47 +312,43 @@ class AFTH:
         from math import floor,log
         self.t=floor(log(self.t,self.tl))
     def rbarr_t_b_tl(self):
-        self.t=self.bigarray[self.ti]
+        self.t=self.strarray[self.ti]
     def rbarr_b_t_tl(self):
-        self.bigarray[self.ti]=self.t
-    def rbarr_t_wordnum_tl_b(self):
+        self.strarray[self.ti]=self.t
+    def rbarr_tk_wordnum_tl_b(self):
         i=0
         t=self.t % 4
         tl=self.tl
-        d=chr(self.bigarray[ti]%128)
+        d=chr(self.strarray[tl%256]%128)
         for i in range(t+1):
-            d=d+chr(self.bigarray[tl+i+1])
-        self.t=self.wordnum_encode(d.encode())
-        self.tl=tl+i+1
-    def rbarr_t_varnum_tl_b(self):
+            d=d+chr(self.strarray[(tl+i+1)%256])
+        self.tk=self.wordnum_encode(d.encode())
+        self.tl=tl+i+2
+    def rbarr_tk_varnum_tl_b(self):
         d=''
         i=0
         t=self.t % 4
         tl=self.tl
         for i in range(t+1):
-            d=d+chr(self.bigarray[tl+i])
-        self.t=self.varnum_encode(d.encode())
+            d=d+chr(self.strarray[(tl+i)%256])
+        self.tk=self.varnum_encode(d.encode())
         self.tl=tl+i+1
-    def rbarr_word_b(self):
-        t=self.t
-        wn=self.bigarray[t]
-        t=t+1
+    def rbarr_word_new(self):
+        wn=self.tk
+        tl=self.tl
         d=''
-        c=chr(self.bigarray[t]%128)
+        c=chr(self.strarray[tl%256]%128)
         while ord(c) >= 33 and ord(c) <= 127:
-            t=t+1
+            tl=tl+1
             d=d+c
-            c=chr(self.bigarray[t]%128)
+            c=chr(self.strarray[tl%256]%128)
         d=d+c
         self.wordlist.append([wn,d])
-        self.t=t
-    def rbarr_var_b(self):
-        t=self.t
-        vn=self.bigarray[t]
-        t=t+1
-        v=self.bigarray[t]
+        self.tl=tl
+    def rbarr_var_new(self):
+        vn=self.tk
+        v=self.tl
         self.varlist.append([vn,v])
-        self.t=t
     def rxtra_t_uptime_s(self):
         from time import monotonic
         self.t=monotonic()
@@ -468,7 +464,7 @@ class AFTH:
         for i in range(len(self.varlist)):
             if t == self.varlist[i][0]:
                 vnum=i
-        self.t=self.wordlist[vnum][1]
+        self.t=self.varlist[vnum][1]
     def run_char_meta(self,gmch=b' '):
         _ret=0
         if gmch==b' ':
@@ -564,13 +560,13 @@ class AFTH:
         elif gmch==b'B':
             self.rbarr_b_t_tl()
         elif gmch==b'c':
-            self.rbarr_t_wordnum_tl_b()
+            self.rbarr_tk_wordnum_tl_b()
         elif gmch==b'C':
-            self.rbarr_t_varnum_tl_b()
+            self.rbarr_tk_varnum_tl_b()
         elif gmch==b'd':
-            self.rbarr_word_b()
+            self.rbarr_word_new()
         elif gmch==b'D':
-            self.rbarr_var_b()
+            self.rbarr_var_new()
         elif gmch==b'u':
             self.rxtra_t_uptime_s()
         elif gmch==b'U':
@@ -705,13 +701,13 @@ class AFTH:
         elif gch==b'B':
             self.rbarr_b_t_tl()
         elif gch==b'c':
-            self.rbarr_t_wordnum_tl_b()
+            self.rbarr_tk_wordnum_tl_b()
         elif gch==b'C':
-            self.rbarr_t_varnum_tl_b()
+            self.rbarr_tk_varnum_tl_b()
         elif gch==b'd':
-            self.rbarr_word_b()
+            self.rbarr_word_new()
         elif gch==b'D':
-            self.rbarr_var_b()
+            self.rbarr_var_new()
         elif gch==b'u':
             self.rxtra_t_uptime_s()
         elif gch==b'U':
@@ -855,7 +851,7 @@ class AFTH:
         runf=0
         self.make_wordlist()
         self.make_varlist()
-        self.make_bigarray()
+        self.make_strarray()
         l=0
         while l < len(self.flst) and l > -1:
             line = self.flst[l]
